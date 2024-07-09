@@ -3,12 +3,12 @@ package com.fernando.nlw.planner_api.services;
 import com.fernando.nlw.planner_api.exceptions.EntityNotFoundException;
 import com.fernando.nlw.planner_api.repositories.TripRepository;
 import com.fernando.nlw.planner_api.responses.TripResponse;
+import com.fernando.nlw.planner_api.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.fernando.nlw.planner_api.models.Trip;
 import com.fernando.nlw.planner_api.requests.TripRequest;
-
-import java.util.Optional;
+import com.fernando.nlw.planner_api.requests.TripUpdateRequest;
 import java.util.UUID;
 
 @Service
@@ -17,13 +17,14 @@ public class TripService {
     private final ParticipantService participantService;
     private final TripRepository tripRepository;
 
-    public TripResponse findTripByID(UUID tripID) {
-        Optional<Trip> tripOptional = tripRepository.findById(tripID);
+    private Trip getTripEntity(UUID tripID) {
+        return tripRepository.findById(tripID)
+            .orElseThrow(() -> new EntityNotFoundException("The trip#%s is not exists".formatted(tripID)));
+    }
 
-        if (tripOptional.isEmpty()) {
-            throw new EntityNotFoundException("The trip#%s is not exists".formatted(tripID));
-        }
-        return tripOptional.map(TripResponse::fromEntity).get();
+    public TripResponse findTripByID(UUID tripID) {
+        Trip trip = getTripEntity(tripID);
+        return TripResponse.fromEntity(trip);
     }
 
     public TripResponse registerTrip(TripRequest tripRequest) {
@@ -33,6 +34,26 @@ public class TripService {
 
         this.participantService.registerParticipantForEvent(tripRequest.emailsToInvite(), trip.getId());
 
+        return TripResponse.fromEntity(trip);
+    }
+
+    public TripResponse updateTrip(UUID tripID, TripUpdateRequest tripRequest) {
+        Trip trip = getTripEntity(tripID);
+        trip.setDestination(tripRequest.destination());
+        trip.setStartsAt(DateUtils.convertToLocalDateTime(tripRequest.startsAt()));
+        trip.setEndsAt(DateUtils.convertToLocalDateTime(tripRequest.endsAt()));
+        
+        tripRepository.save(trip);
+
+        return TripResponse.fromEntity(trip);
+    }
+
+    public TripResponse confirmTrip(UUID tripID) {
+        Trip trip = getTripEntity(tripID);
+        trip.setIsConfirmed(true);
+        this.tripRepository.save(trip);
+
+        this.participantService.triggerConfirmationEmailToParticipants(tripID);
         return TripResponse.fromEntity(trip);
     }
 }
