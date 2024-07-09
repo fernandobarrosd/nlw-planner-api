@@ -5,9 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
+import com.fernando.nlw.planner_api.requests.TripRequest;
+import com.fernando.nlw.planner_api.utils.DateUtils;
 
 @Entity
 @Table(name = "trips")
@@ -37,4 +38,13 @@ public class Trip {
 
     @Column(name = "owner_email", nullable = false)
     private String ownerEmail;
+
+    public Trip(TripRequest tripRequest) {
+        this.destination = tripRequest.destination();
+        this.ownerName = tripRequest.ownerName();
+        this.ownerEmail = tripRequest.ownerEmail();
+        this.isConfirmed = false;
+        this.startsAt = DateUtils.convertToLocalDateTime(tripRequest.startsAt());
+        this.endsAt = DateUtils.convertToLocalDateTime(tripRequest.endsAt());
+    }
 }
