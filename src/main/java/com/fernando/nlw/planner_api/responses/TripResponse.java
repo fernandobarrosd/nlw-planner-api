@@ -9,6 +9,7 @@ public record TripResponse(
         String destination,
         String startsAt,
         String endsAt,
+        Boolean isConfirmed,
         String ownerName,
         String ownerEmail) {
 
@@ -20,6 +21,7 @@ public record TripResponse(
                 .endsAt(trip.getEndsAt().toString())
                 .ownerName(trip.getOwnerName())
                 .ownerEmail(trip.getOwnerEmail())
+                .isConfirmed(trip.getIsConfirmed())
                 .build();
     }
 }
