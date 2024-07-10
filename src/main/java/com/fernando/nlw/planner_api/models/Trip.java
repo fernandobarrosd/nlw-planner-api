@@ -1,26 +1,21 @@
 package com.fernando.nlw.planner_api.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import com.fernando.nlw.planner_api.models.base.BaseEntity;
 import com.fernando.nlw.planner_api.requests.TripRequest;
 import com.fernando.nlw.planner_api.utils.DateUtils;
 
 @Entity
 @Table(name = "trips")
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
-public class Trip {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
-
+public class Trip extends BaseEntity {
     @Column(nullable = false)
     private String destination;
 
@@ -38,6 +33,18 @@ public class Trip {
 
     @Column(name = "owner_email", nullable = false)
     private String ownerEmail;
+
+    
+    public Trip(UUID id, String destination, LocalDateTime startsAt, LocalDateTime endsAt, Boolean isConfirmed,
+        String ownerName, String ownerEmail) {
+        super(id);
+        this.destination = destination;
+        this.startsAt = startsAt;
+        this.endsAt = endsAt;
+        this.isConfirmed = isConfirmed;
+        this.ownerName = ownerName;
+        this.ownerEmail = ownerEmail;
+    }
 
     public Trip(TripRequest tripRequest) {
         this.destination = tripRequest.destination();

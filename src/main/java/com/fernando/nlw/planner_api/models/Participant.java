@@ -1,8 +1,8 @@
 package com.fernando.nlw.planner_api.models;
 
 import java.util.UUID;
+import com.fernando.nlw.planner_api.models.base.TripResource;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,13 +11,8 @@ import lombok.Setter;
 @Table(name = "participants")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class Participant {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
-
+public class Participant extends TripResource {
     private String name;
 
     @Column(nullable = false)
@@ -26,9 +21,13 @@ public class Participant {
     @Column(name = "is_confirmed", nullable = false)
     private Boolean isConfirmed;
 
-    @ManyToOne
-    @JoinColumn(name = "trip_id", nullable = false)
-    private Trip trip;
+    
+    public Participant(UUID id, String name, String email, Boolean isConfirmed, Trip trip) {
+        super(id, trip);
+        this.name = name;
+        this.email = email;
+        this.isConfirmed = isConfirmed;
+    }
 
     public Participant(String email, Trip trip) {
         this.email = email;
