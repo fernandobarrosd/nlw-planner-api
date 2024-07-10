@@ -7,12 +7,4 @@ import java.util.List;
 @Builder
 public record ActivitiesResponse(
     UUID tripID,
-    List<ActivityResponse> activities) {
-
-        @Builder
-        public record ActivityResponse(
-            UUID id,
-            String title,
-            String accursAt,
-            Boolean isFinish) {}
-    }
+    List<ActivityResponse> activities) {}

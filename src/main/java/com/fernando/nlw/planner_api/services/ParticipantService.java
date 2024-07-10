@@ -56,14 +56,12 @@ public class ParticipantService {
 
         var participants = this.participantRepository.findByTripId(tripID)
             .stream()
-            .map(participant -> {
-                return ParticipantsResponse.ParticipantResponse.builder()
-                    .id(participant.getId())
-                    .isConfirmed(participant.getIsConfirmed())
-                    .name(participant.getName())
-                    .email(participant.getEmail())
-                    .build();
-            })
+            .map(participant -> ParticipantResponse.builder()
+                .id(participant.getId())
+                .isConfirmed(participant.getIsConfirmed())
+                .name(participant.getName())
+                .email(participant.getEmail())
+                .build())
             .toList();
         return ParticipantsResponse.builder()
                 .tripID(tripID)

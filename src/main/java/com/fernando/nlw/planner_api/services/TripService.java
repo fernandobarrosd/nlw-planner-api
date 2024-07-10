@@ -1,12 +1,10 @@
 package com.fernando.nlw.planner_api.services;
 
 import com.fernando.nlw.planner_api.exceptions.EntityNotFoundException;
+import com.fernando.nlw.planner_api.exceptions.TripEndsDateBiggerThanStartsAtException;
 import com.fernando.nlw.planner_api.exceptions.TripNotConfirmedException;
 import com.fernando.nlw.planner_api.repositories.TripRepository;
-import com.fernando.nlw.planner_api.responses.ActivityCreatedResponse;
-import com.fernando.nlw.planner_api.responses.LinkCreatedResponse;
-import com.fernando.nlw.planner_api.responses.ParticipantResponse;
-import com.fernando.nlw.planner_api.responses.TripResponse;
+import com.fernando.nlw.planner_api.responses.*;
 import com.fernando.nlw.planner_api.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +13,8 @@ import com.fernando.nlw.planner_api.requests.ActivityRequest;
 import com.fernando.nlw.planner_api.requests.LinkRequest;
 import com.fernando.nlw.planner_api.requests.TripRequest;
 import com.fernando.nlw.planner_api.requests.TripUpdateRequest;
+
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -36,6 +36,13 @@ public class TripService {
     }
 
     public TripResponse registerTrip(TripRequest tripRequest) {
+        LocalDateTime startsAt = DateUtils.convertToLocalDateTime(tripRequest.startsAt());
+        LocalDateTime endsAt = DateUtils.convertToLocalDateTime(tripRequest.endsAt());
+
+        if (endsAt.isBefore(startsAt)) {
+            throw new TripEndsDateBiggerThanStartsAtException("The %s is bigger then %s".formatted(endsAt, startsAt));
+        }
+
         Trip trip = new Trip(tripRequest);
 
         this.tripRepository.save(trip);
@@ -78,13 +85,13 @@ public class TripService {
         return response;
     }
 
-    public ActivityCreatedResponse createActivity(UUID tripID, ActivityRequest request) {
+    public ActivityResponse createActivity(UUID tripID, ActivityRequest request) {
         Trip trip = getTripEntity(tripID);
 
         return activityService.createActivity(trip, request);
     }
 
-    public LinkCreatedResponse createLink(UUID tripID, LinkRequest request) {
+    public LinkResponse createLink(UUID tripID, LinkRequest request) {
         Trip trip = getTripEntity(tripID);
 
         return linkService.createLink(trip, request);

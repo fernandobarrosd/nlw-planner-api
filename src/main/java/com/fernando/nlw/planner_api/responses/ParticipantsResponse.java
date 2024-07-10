@@ -7,14 +7,4 @@ import lombok.Builder;
 @Builder
 public record ParticipantsResponse(
     UUID tripID,
-    List<ParticipantResponse> participants) {
-
-        @Builder
-        public record ParticipantResponse(
-            UUID id,
-            String name,
-            Boolean isConfirmed,
-            String email) {
-
-        }
-    }
+    List<ParticipantResponse> participants) {}

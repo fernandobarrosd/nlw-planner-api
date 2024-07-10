@@ -5,13 +5,7 @@ import com.fernando.nlw.planner_api.requests.LinkRequest;
 import com.fernando.nlw.planner_api.requests.ParticipantRequest;
 import com.fernando.nlw.planner_api.requests.TripRequest;
 import com.fernando.nlw.planner_api.requests.TripUpdateRequest;
-import com.fernando.nlw.planner_api.responses.TripResponse;
-import com.fernando.nlw.planner_api.responses.ActivitiesResponse;
-import com.fernando.nlw.planner_api.responses.ActivityCreatedResponse;
-import com.fernando.nlw.planner_api.responses.LinkCreatedResponse;
-import com.fernando.nlw.planner_api.responses.LinksResponse;
-import com.fernando.nlw.planner_api.responses.ParticipantResponse;
-import com.fernando.nlw.planner_api.responses.ParticipantsResponse;
+import com.fernando.nlw.planner_api.responses.*;
 import com.fernando.nlw.planner_api.services.TripService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -61,7 +55,7 @@ public class TripController {
     // Activities
 
     @PostMapping("/{tripID}/activities")
-    public ResponseEntity<ActivityCreatedResponse> createActivity(
+    public ResponseEntity<ActivityResponse> createActivity(
         @PathVariable UUID tripID,
         @RequestBody ActivityRequest request) {
         return ResponseEntity.ok(tripService.createActivity(tripID, request));
@@ -77,7 +71,7 @@ public class TripController {
     // Links
 
     @PostMapping("/{tripID}/links")
-    public ResponseEntity<LinkCreatedResponse> createLink(
+    public ResponseEntity<LinkResponse> createLink(
         @PathVariable UUID tripID,
         @RequestBody LinkRequest request) {
         return ResponseEntity.ok(tripService.createLink(tripID, request));

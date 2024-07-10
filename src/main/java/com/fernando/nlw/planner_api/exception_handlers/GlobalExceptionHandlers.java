@@ -1,6 +1,7 @@
 package com.fernando.nlw.planner_api.exception_handlers;
 
 import com.fernando.nlw.planner_api.exceptions.EntityNotFoundException;
+import com.fernando.nlw.planner_api.exceptions.TripEndsDateBiggerThanStartsAtException;
 import com.fernando.nlw.planner_api.exceptions.TripNotConfirmedException;
 import com.fernando.nlw.planner_api.responses.error.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,6 +36,23 @@ public class GlobalExceptionHandlers {
     @ExceptionHandler(TripNotConfirmedException.class)
     public ResponseEntity<ErrorResponse> handleTripNotConfirmed(
             TripNotConfirmedException exception,
+            HttpServletRequest request) {
+
+        Integer statusCode = HttpStatus.BAD_REQUEST.value();
+        String path = request.getRequestURI();
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .message(exception.getMessage())
+                .path(path)
+                .statusCode(statusCode)
+                .build();
+
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    @ExceptionHandler(TripEndsDateBiggerThanStartsAtException.class)
+    public ResponseEntity<ErrorResponse> handleTripEndsDateBiggerThanStartsAt(
+            TripEndsDateBiggerThanStartsAtException exception,
             HttpServletRequest request) {
 
         Integer statusCode = HttpStatus.BAD_REQUEST.value();

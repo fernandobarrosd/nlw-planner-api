@@ -16,7 +16,9 @@ public class ParticipantController {
 
 
     @PutMapping("/{participantID}/confirm")
-    public ResponseEntity<ParticipantResponse> confirmParticipant(@PathVariable UUID participantID, @RequestBody ParticipantRequest request) {
+    public ResponseEntity<ParticipantResponse> confirmParticipant(
+            @PathVariable UUID participantID,
+            @RequestBody ParticipantRequest request) {
         var participant = participantService.confirmParticipant(participantID, request);
         return ResponseEntity.ok(participant);
     }
