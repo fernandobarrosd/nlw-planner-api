@@ -1,7 +1,9 @@
 package com.fernando.nlw.planner_api.services;
 
 import com.fernando.nlw.planner_api.exceptions.EntityNotFoundException;
+import com.fernando.nlw.planner_api.exceptions.TripNotConfirmedException;
 import com.fernando.nlw.planner_api.repositories.TripRepository;
+import com.fernando.nlw.planner_api.responses.ParticipantResponse;
 import com.fernando.nlw.planner_api.responses.TripResponse;
 import com.fernando.nlw.planner_api.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +19,7 @@ public class TripService {
     private final ParticipantService participantService;
     private final TripRepository tripRepository;
 
-    private Trip getTripEntity(UUID tripID) {
+    public Trip getTripEntity(UUID tripID) {
         return tripRepository.findById(tripID)
             .orElseThrow(() -> new EntityNotFoundException("The trip#%s is not exists".formatted(tripID)));
     }
@@ -32,7 +34,7 @@ public class TripService {
 
         this.tripRepository.save(trip);
 
-        this.participantService.registerParticipantForEvent(tripRequest.emailsToInvite(), trip.getId());
+        this.participantService.registerParticipantForEvent(tripRequest.emailsToInvite(), trip);
 
         return TripResponse.fromEntity(trip);
     }
@@ -55,5 +57,18 @@ public class TripService {
 
         this.participantService.triggerConfirmationEmailToParticipants(tripID);
         return TripResponse.fromEntity(trip);
+    }
+
+    public ParticipantResponse inviteParticipantToTrip(UUID tripID, String emailToInvite) {
+        Trip trip = getTripEntity(tripID);
+        var response = this.participantService.registerParticipantForEvent(emailToInvite, trip);
+
+        if (!trip.getIsConfirmed()) {
+            throw new TripNotConfirmedException("The trip is not confirmed");
+        }
+
+        this.participantService.triggerConfirmationEmailToParticipant(emailToInvite);
+        
+        return response;
     }
 }

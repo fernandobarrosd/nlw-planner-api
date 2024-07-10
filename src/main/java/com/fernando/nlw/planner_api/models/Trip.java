@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 import com.fernando.nlw.planner_api.requests.TripRequest;
 import com.fernando.nlw.planner_api.utils.DateUtils;
@@ -38,6 +39,9 @@ public class Trip {
 
     @Column(name = "owner_email", nullable = false)
     private String ownerEmail;
+
+    @OneToMany(mappedBy = "trip")
+    private List<Participant> participants;
 
     public Trip(TripRequest tripRequest) {
         this.destination = tripRequest.destination();
